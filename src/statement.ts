@@ -7,22 +7,30 @@ export const statement = (customer: Customer, movies: MovieCollection): string =
 
 export const htmlStatement = (customer: Customer, movies: MovieCollection): string => {
   let totalAmount = 0;
-  let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`;
-  result += `<ul>\n`;
+  let output = [];
+
+  let name = enclose(customer.name, 'em');
+  output.push(enclose(`Rental Record for ${name}`, 'h1'));
+  
+  output.push('<ul>');
 
   for (let r of customer.rentals) {
     let movie = movies[r.movieID as keyof MovieCollection];
     let thisAmount = getAmountOwed(movie.code, r.days);
 
-    result += `\t<li>${movie.title} - ${thisAmount}</li>\n`;
+    output.push('\t' + enclose(`${movie.title} - ${thisAmount}`, 'li'));
     totalAmount += thisAmount;
   }
 
-  result += `</ul>\n`;
-  result += `<p>Amount owed is <em>${totalAmount}</em></p>\n`;
-  result += `<p>You earned <em>${getFrequentRenterPts(customer, movies)}</em> frequent renter points</p>\n`;
+  output.push('</ul>');
 
-  return result;
+  let total = enclose(totalAmount, 'em');
+  output.push(enclose(`Amount owed is ${total}`, 'p'));
+
+  let points = enclose(getFrequentRenterPts(customer, movies), 'em');
+  output.push(enclose(`You earned ${points} frequent renter points`, 'p'));
+
+  return output.join('\n');
 }
 
 function getFrequentRenterPts(c: Customer, movies: MovieCollection): number {
@@ -59,4 +67,8 @@ function getAmountOwed(code: MovieCode, days: number): number {
   }
 
   return owed;
+}
+
+function enclose(content: any, el: string): string {
+  return `<${el}>${content}</${el}>`;
 }
