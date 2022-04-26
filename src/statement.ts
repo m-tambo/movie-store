@@ -2,21 +2,7 @@ import { MovieCode, MovieCollection } from "./Movie";
 import { Customer } from "./Customer";
 
 export const statement = (customer: Customer, movies: MovieCollection): string => {
-  let totalAmount = 0;
-  let result = `Rental Record for ${customer.name}\n`;
-
-  for (let r of customer.rentals) {
-    let movie = movies[r.movieID as keyof MovieCollection];
-    let thisAmount = getAmountOwed(movie.code, r.days);
-
-    result += `\t${movie.title}\t${thisAmount}\n`;
-    totalAmount += thisAmount;
-  }
-
-  result += `Amount owed is ${totalAmount}\n`;
-  result += `You earned ${getFrequentRenterPts(customer, movies)} frequent renter points\n`;
-
-  return result;
+  return htmlStatement(customer, movies).replace(/<[^>]+>/g, '');
 };
 
 export const htmlStatement = (customer: Customer, movies: MovieCollection): string => {
