@@ -1,5 +1,5 @@
 export interface Rental {
-  movieId: string;
+  movieID: string;
   days: number;
 }
 
